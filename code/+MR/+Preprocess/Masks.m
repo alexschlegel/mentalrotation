@@ -12,11 +12,7 @@ function b = Masks(varargin)
 %		force:		(false)
 %		nthread:	(12)
 % 
-<<<<<<< HEAD
 % Updated: 2015-01-14
-=======
-% Updated: 2014-12-09
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
 % Copyright 2014 Alex Schlegel (schlegel@gmail.com).  This work is licensed
 % under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported
 % License.
@@ -36,7 +32,6 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
 	strDirMaskCI	= DirAppend(strDirData,'masks_from_ci');
 	cPathMaskMNI	= FindFilesByExtension(strDirMaskCI,'nii.gz');
 	
-<<<<<<< HEAD
     %remove the occ and non-core ci masks
         cRemove = {
             'occ'
@@ -48,10 +43,6 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
             'fo'
             };
         bRemove					= cellfun(@(f) ~all(cellfun(@isempty,regexp(PathGetFilePre(f,'favor','nii.gz'),cRemove,'once'))),cPathMaskMNI);
-=======
-    %remove the occ masks
-        bRemove					= cellfun(@(f) ~isempty(strfind(PathGetFilePre(f,'favor','nii.gz'),'occ')),cPathMaskMNI);
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
         cPathMaskMNI(bRemove)	= [];
     
     nMask			= numel(cPathMaskMNI);
@@ -90,7 +81,6 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
 						{'ctx_rh_G_and_S_occipital_inf' 'ctx_rh_G_occipital_middle' 'ctx_rh_G_occipital_sup' 'ctx_rh_G_cuneus' 'ctx_rh_Pole_occipital' 'ctx_rh_S_oc_middle_and_Lunatus' 'ctx_rh_S_oc_sup_and_transversal' 'ctx_rh_S_occipital_ant'}
 						{'ctx_lh_G_and_S_occipital_inf' 'ctx_lh_G_occipital_middle' 'ctx_lh_G_occipital_sup' 'ctx_lh_G_cuneus' 'ctx_lh_Pole_occipital' 'ctx_lh_S_oc_middle_and_Lunatus' 'ctx_lh_S_oc_sup_and_transversal' 'ctx_lh_S_occipital_ant' 'ctx_rh_G_and_S_occipital_inf' 'ctx_rh_G_occipital_middle' 'ctx_rh_G_occipital_sup' 'ctx_rh_G_cuneus' 'ctx_rh_Pole_occipital' 'ctx_rh_S_oc_middle_and_Lunatus' 'ctx_rh_S_oc_sup_and_transversal' 'ctx_rh_S_occipital_ant'}
                         % frontal pole
-<<<<<<< HEAD
 %                         {'ctx_lh_G_and_S_transv_frontopol'}
 %                         {'ctx_rh_G_and_S_transv_frontopol'}
 %                         {'ctx_lh_G_and_S_transv_frontopol' 'ctx_rh_G_and_S_transv_frontopol'}
@@ -103,45 +93,22 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
 %                         {'ctx_lh_G_front_sup'}                                                                                      % prepre_sma
                         {'ctx_lh_G_postcentral'}                                                                                    % somatosensory
                         {'Left-Cerebellum-Cortex'}                                                                                  % cerebellum
-=======
-                        {'ctx_lh_G_and_S_transv_frontopol'}
-                        {'ctx_rh_G_and_S_transv_frontopol'}
-                        {'ctx_lh_G_and_S_transv_frontopol' 'ctx_rh_G_and_S_transv_frontopol'}
-                        % lh
-                        {'ctx_lh_S_central' 'ctx_lh_G_precentral' 'ctx_lh_S_precentral-sup-part' 'ctx_lh_S_precentral-inf-part'}
-                        {'ctx_lh_G_front_sup' 'ctx_lh_S_front_sup'}
-                        {'ctx_lh_G_front_middle' 'ctx_lh_S_front_sup'}
-                        {'ctx_lh_G_front_sup'}
-                        {'ctx_lh_G_front_sup'}
-                        {'ctx_lh_G_postcentral'}
-                        {'Left-Cerebellum-Cortex'}
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
                         % rh
                         {'ctx_rh_S_central' 'ctx_rh_G_precentral' 'ctx_rh_S_precentral-sup-part' 'ctx_rh_S_precentral-inf-part'}
                         {'ctx_rh_G_front_sup' 'ctx_rh_S_front_sup'}
                         {'ctx_rh_G_front_middle' 'ctx_rh_S_front_sup'}
-<<<<<<< HEAD
                         {'ctx_rh_S_front_inf' 'ctx_rh_G_front_inf_Opercular'}
                         {'ctx_rh_G_front_sup'}
 %                         {'ctx_rh_G_front_sup'}
-=======
-                        {'ctx_rh_G_front_sup'}
-                        {'ctx_rh_G_front_sup'}
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
                         {'ctx_rh_G_postcentral'}
                         {'Right-Cerebellum-Cortex'}
                         % bilateral                      
                         {'ctx_lh_S_central' 'ctx_lh_G_precentral' 'ctx_lh_S_precentral-sup-part' 'ctx_lh_S_precentral-inf-part' 'ctx_rh_S_central' 'ctx_rh_G_precentral' 'ctx_rh_S_precentral-sup-part' 'ctx_rh_S_precentral-inf-part'}
                         {'ctx_lh_G_front_sup' 'ctx_lh_S_front_sup' 'ctx_rh_G_front_sup' 'ctx_rh_S_front_sup'}
                         {'ctx_lh_G_front_middle' 'ctx_lh_S_front_sup' 'ctx_rh_G_front_middle' 'ctx_rh_S_front_sup'}
-<<<<<<< HEAD
                         {'ctx_lh_S_front_inf' 'ctx_lh_G_front_inf_Opercular' 'ctx_rh_S_front_inf' 'ctx_rh_G_front_inf_Opercular'}
                         {'ctx_lh_G_front_sup' 'ctx_rh_G_front_sup'}
 %                         {'ctx_lh_G_front_sup' 'ctx_rh_G_front_sup'}
-=======
-                        {'ctx_lh_G_front_sup' 'ctx_rh_G_front_sup'}
-                        {'ctx_lh_G_front_sup' 'ctx_rh_G_front_sup'}
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
                         {'ctx_lh_G_postcentral' 'ctx_rh_G_postcentral'}
                         {'Left-Cerebellum-Cortex' 'Right-Cerebellum-Cortex'}
 					};
@@ -151,7 +118,6 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
 						[]
 						[]
                         % frontal pole
-<<<<<<< HEAD
 %                         []
 %                         []
 %                         []
@@ -163,45 +129,23 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
                         [0 0 1/3; 1 1 2/3]                      % pre_sma
 %                         [0 0 2/3; 1 1 1]                        % prepre_sma
                         []                                      % somatosensory
-=======
-                        []
-                        []
-                        []
-                        % lh
-                        []                                      % primary
-                        {[0 0 0; 1 1 1/3] [0 0 0; .5 1 1/3]}    % supplementary
-                        {[0 0 0; 1 1 1/3] [.5 0 0; 1 1 1/3]}    % pre
-                        [0 0 1/3; 1 1 2/3]                      % pre-sup
-                        [0 0 2/3; 1 1 1]                        % prepre-sup
-                        []                                      % somato
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
                         []                                      % cerebellum
                         % rh
                         []
                         {[0 0 0; 1 1 1/3] [.5 0 0; 1 1 1/3]}
                         {[0 0 0; 1 1 1/3] [0 0 0; .5 1 1/3]}
-<<<<<<< HEAD
                         {[0 0 0; 1 1 1/3] []}
                         [0 0 1/3; 1 1 2/3]
 %                         [0 0 2/3; 1 1 1]
-=======
-                        [0 0 1/3; 1 1 2/3]
-                        [0 0 2/3; 1 1 1]
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
                         []
                         []
                         % bilateral
                         []
                         {[0 0 0; 1 1 1/3] [0 0 0; .5 1 1/3] [0 0 0; 1 1 1/3] [.5 0 0; 1 1 1/3]}
                         {[0 0 0; 1 1 1/3] [.5 0 0; 1 1 1/3] [0 0 0; 1 1 1/3] [0 0 0; .5 1 1/3]}
-<<<<<<< HEAD
                         {[0 0 0; 1 1 1/3] [] [0 0 0; 1 1 1/3] []}
                         {[0 0 1/3; 1 1 2/3] [0 0 1/3; 1 1 2/3]}
 %                         {[0 0 2/3; 1 1 1] [0 0 2/3; 1 1 1]}
-=======
-                        {[0 0 1/3; 1 1 2/3] [0 0 1/3; 1 1 2/3]}
-                        {[0 0 2/3; 1 1 1] [0 0 2/3; 1 1 1]}
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
                         []
                         []
                         
@@ -211,7 +155,6 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
 						'occ_right'
 						'occ'
                         
-<<<<<<< HEAD
 %                         'frontal_pole_left'
 %                         'frontal_pole_right'
 %                         'frontal_pole'
@@ -222,47 +165,24 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
                         'pmv_left'
                         'pre_sma_left'
 %                         'prepre_sma_left'
-=======
-                        'frontal_pole_left'
-                        'frontal_pole_right'
-                        'frontal_pole'
-                        
-                        'primary_motor_left'
-                        'sma_left'
-                        'premotor_left'
-                        'pre_sma_left'
-                        'prepre_sma_left'
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
                         'somatosensory_left'
                         'cerebellum_left'
                         
                         'primary_motor_right'
                         'sma_right'
-<<<<<<< HEAD
                         'pmd_right'
                         'pmv_right'
                         'pre_sma_right'
 %                         'prepre_sma_right'
-=======
-                        'premotor_right'
-                        'pre_sma_right'
-                        'prepre_sma_right'
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
                         'somatosensory_right'
                         'cerebellum_right'
                         
                         'primary_motor'
                         'sma'
-<<<<<<< HEAD
                         'pmd'
                         'pmv'
                         'pre_sma'
 %                         'prepre_sma'
-=======
-                        'premotor'
-                        'pre_sma'
-                        'prepre_sma'
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
                         'somatosensory'
                         'cerebellum'
 					};
@@ -305,7 +225,6 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
 					'nthread'		, opt.nthread			  ...
 					);
 
-<<<<<<< HEAD
 
  	sUnion	= MR.UnionMasks;
 
@@ -384,33 +303,4 @@ end
 % 	
 % end
 %------------------------------------------------------------------------------%
-=======
-%union masks
-	sUnion	= MR.UnionMasks;
-	
-	cUnionName	= fieldnames(sUnion);
-	
-	MultiTask(@(n) UnionMask(sUnion.(n),n),{cUnionName},...
-		'description'	, 'constructing union masks'	, ...
-		'nthread'		, opt.nthread					  ...
-		);
-	
-%------------------------------------------------------------------------------%
-function UnionMask(cMask,strName)	
-		
-		for kS=1:nSubject
-			strSubject	= cSubject{kS};
-			
-			strDirMaskCur	= DirAppend(strDirMaskOut,strSubject);
-			cPathMask		= cellfun(@(m) PathUnsplit(strDirMaskCur,m,'nii.gz'),cMask,'uni',false);
-            
-            strPathUnion = PathUnsplit(strDirMaskCur,strName,'nii.gz');
-            MRIMaskMerge(cPathMask,strPathUnion,'force',opt.force,'silent',true);
-            
-		end
-	
-end
-%------------------------------------------------------------------------------%
-
->>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
 end

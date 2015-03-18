@@ -1,8 +1,7 @@
 function b = Masks(varargin)
 % MR.Masks
 % 
-% Description:	prepare masks from CI, the anatomical occipital mask and
-% the motor/somatosensory masks.
+% Description:	prepare masks from CI and the anatomical occipital mask
 % 
 % Syntax:	b = MR.Masks(<options>)
 % 
@@ -12,7 +11,7 @@ function b = Masks(varargin)
 %		force:		(false)
 %		nthread:	(12)
 % 
-% Updated: 2014-12-09
+% Updated: 2014-03-15
 % Copyright 2014 Alex Schlegel (schlegel@gmail.com).  This work is licensed
 % under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported
 % License.
@@ -49,7 +48,7 @@ strDirMaskOut	= DirAppend(strDirData,'mask');
 	
 	cPathXFMMNI2Func	= cellfun(@(d) PathUnsplit(d,'standard2example_func','mat'),cDirReg,'uni',false);
 	cPathFunc			= cellfun(@(d) PathUnsplit(d,'example_func','nii.gz'),cDirReg,'uni',false);
-OB	
+	
 	cPathMaskMNIRep		= repmat(cPathMaskMNI,[1 nSubject]);
 	cPathXFMMNI2FuncRep	= repmat(cPathXFMMNI2Func',[nMask 1]);
 	cPathFuncRep		= repmat(cPathFunc',[nMask 1]);
@@ -67,57 +66,33 @@ OB
 
 %occipital and motor masks
 	cMaskLabel	=	{
-                        % occipital
 						{'ctx_lh_G_and_S_occipital_inf' 'ctx_lh_G_occipital_middle' 'ctx_lh_G_occipital_sup' 'ctx_lh_G_cuneus' 'ctx_lh_Pole_occipital' 'ctx_lh_S_oc_middle_and_Lunatus' 'ctx_lh_S_oc_sup_and_transversal' 'ctx_lh_S_occipital_ant'}
 						{'ctx_rh_G_and_S_occipital_inf' 'ctx_rh_G_occipital_middle' 'ctx_rh_G_occipital_sup' 'ctx_rh_G_cuneus' 'ctx_rh_Pole_occipital' 'ctx_rh_S_oc_middle_and_Lunatus' 'ctx_rh_S_oc_sup_and_transversal' 'ctx_rh_S_occipital_ant'}
 						{'ctx_lh_G_and_S_occipital_inf' 'ctx_lh_G_occipital_middle' 'ctx_lh_G_occipital_sup' 'ctx_lh_G_cuneus' 'ctx_lh_Pole_occipital' 'ctx_lh_S_oc_middle_and_Lunatus' 'ctx_lh_S_oc_sup_and_transversal' 'ctx_lh_S_occipital_ant' 'ctx_rh_G_and_S_occipital_inf' 'ctx_rh_G_occipital_middle' 'ctx_rh_G_occipital_sup' 'ctx_rh_G_cuneus' 'ctx_rh_Pole_occipital' 'ctx_rh_S_oc_middle_and_Lunatus' 'ctx_rh_S_oc_sup_and_transversal' 'ctx_rh_S_occipital_ant'}
-                        % frontal pole
-                        {'ctx_lh_G_and_S_transv_frontopol'}
-                        {'ctx_rh_G_and_S_transv_frontopol'}
-                        {'ctx_lh_G_and_S_transv_frontopol' 'ctx_rh_G_and_S_transv_frontopol'}
-                        % lh
                         {'ctx_lh_S_central' 'ctx_lh_G_precentral' 'ctx_lh_S_precentral-sup-part' 'ctx_lh_S_precentral-inf-part'}
                         {'ctx_lh_G_front_sup' 'ctx_lh_S_front_sup'}
                         {'ctx_lh_G_front_middle' 'ctx_lh_S_front_sup'}
                         {'ctx_lh_G_front_sup'}
                         {'ctx_lh_G_front_sup'}
                         {'ctx_lh_G_postcentral'}
-                        {'Left-Cerebellum-Cortex'}
-                        % rh
                         {'ctx_rh_S_central' 'ctx_rh_G_precentral' 'ctx_rh_S_precentral-sup-part' 'ctx_rh_S_precentral-inf-part'}
                         {'ctx_rh_G_front_sup' 'ctx_rh_S_front_sup'}
                         {'ctx_rh_G_front_middle' 'ctx_rh_S_front_sup'}
                         {'ctx_rh_G_front_sup'}
                         {'ctx_rh_G_front_sup'}
                         {'ctx_rh_G_postcentral'}
-                        {'Right-Cerebellum-Cortex'}
-                        % bilateral                      
-                        {'ctx_lh_S_central' 'ctx_lh_G_precentral' 'ctx_lh_S_precentral-sup-part' 'ctx_lh_S_precentral-inf-part' 'ctx_rh_S_central' 'ctx_rh_G_precentral' 'ctx_rh_S_precentral-sup-part' 'ctx_rh_S_precentral-inf-part'}
-                        {'ctx_lh_G_front_sup' 'ctx_lh_S_front_sup' 'ctx_rh_G_front_sup' 'ctx_rh_S_front_sup'}
-                        {'ctx_lh_G_front_middle' 'ctx_lh_S_front_sup' 'ctx_rh_G_front_middle' 'ctx_rh_S_front_sup'}
-                        {'ctx_lh_G_front_sup' 'ctx_rh_G_front_sup'}
-                        {'ctx_lh_G_front_sup' 'ctx_rh_G_front_sup'}
-                        {'ctx_lh_G_postcentral' 'ctx_rh_G_postcentral'}
-                        {'Left-Cerebellum-Cortex' 'Right-Cerebellum-Cortex'}
+                        {'ctx_lh_G_and_S_transv_frontopol' 'ctx_rh_G_and_S_transv_frontopol'}
 					};
 	cCrop		=	{
-                        % occipital
 						[]
 						[]
 						[]
-                        % frontal pole
                         []
+                        {[0 0 0; 1 1 1/3] [0 0 0; .5 1 1/3]}
+                        {[0 0 0; 1 1 1/3] [.5 0 0; 1 1 1/3]}
+                        [0 0 1/3; 1 1 2/3]
+                        [0 0 2/3; 1 1 1]
                         []
-                        []
-                        % lh
-                        []                                      % primary
-                        {[0 0 0; 1 1 1/3] [0 0 0; .5 1 1/3]}    % supplementary
-                        {[0 0 0; 1 1 1/3] [.5 0 0; 1 1 1/3]}    % pre
-                        [0 0 1/3; 1 1 2/3]                      % pre-sup
-                        [0 0 2/3; 1 1 1]                        % prepre-sup
-                        []                                      % somato
-                        []                                      % cerebellum
-                        % rh
                         []
                         {[0 0 0; 1 1 1/3] [.5 0 0; 1 1 1/3]}
                         {[0 0 0; 1 1 1/3] [0 0 0; .5 1 1/3]}
@@ -125,48 +100,24 @@ OB
                         [0 0 2/3; 1 1 1]
                         []
                         []
-                        % bilateral
-                        []
-                        {[0 0 0; 1 1 1/3] [0 0 0; .5 1 1/3] [0 0 0; 1 1 1/3] [.5 0 0; 1 1 1/3]}
-                        {[0 0 0; 1 1 1/3] [.5 0 0; 1 1 1/3] [0 0 0; 1 1 1/3] [0 0 0; .5 1 1/3]}
-                        {[0 0 1/3; 1 1 2/3] [0 0 1/3; 1 1 2/3]}
-                        {[0 0 2/3; 1 1 1] [0 0 2/3; 1 1 1]}
-                        []
-                        []
-                        
 					};
 	cMaskName	=	{
-						'occ_left'
-						'occ_right'
+						'occ-left'
+						'occ-right'
 						'occ'
-                        
-                        'frontal_pole_left'
-                        'frontal_pole_right'
-                        'frontal_pole'
-                        
-                        'primary_motor_left'
-                        'sma_left'
-                        'premotor_left'
-                        'pre_sma_left'
-                        'prepre_sma_left'
-                        'somatosensory_left'
-                        'cerebellum_left'
-                        
-                        'primary_motor_right'
-                        'sma_right'
-                        'premotor_right'
-                        'pre_sma_right'
-                        'prepre_sma_right'
-                        'somatosensory_right'
-                        'cerebellum_right'
-                        
                         'primary_motor'
-                        'sma'
                         'premotor'
+                        'inf_premotor'
+                        'sma'
                         'pre_sma'
-                        'prepre_sma'
-                        'somatosensory'
-                        'cerebellum'
+                        'somatosens'
+                        'primary_motor_r'
+                        'premotor_r'
+                        'inf_premotor_r'
+                        'sma_r'
+                        'pre_sma_r'
+                        'somatosens_r'
+                        'frontal_pole'
 					};
 	nMask		= numel(cMaskLabel);
 	
@@ -211,6 +162,7 @@ OB
 	sUnion	= MR.UnionMasks;
 	
 	cUnionName	= fieldnames(sUnion);
+	nUnion		= numel(cUnionName);
 	
 	MultiTask(@(n) UnionMask(sUnion.(n),n),{cUnionName},...
 		'description'	, 'constructing union masks'	, ...
@@ -218,19 +170,25 @@ OB
 		);
 	
 %------------------------------------------------------------------------------%
-function UnionMask(cMask,strName)	
+function UnionMask(cMask,strName)
+	cHemi	= {'-left';'-right';''};
+	nHemi	= numel(cHemi);
+	
+	cMask	= reshape(cMask,[],1);
+	
+	for kH=1:nHemi
+		strHemi	= cHemi{kH};
 		
 		for kS=1:nSubject
 			strSubject	= cSubject{kS};
 			
 			strDirMaskCur	= DirAppend(strDirMaskOut,strSubject);
-			cPathMask		= cellfun(@(m) PathUnsplit(strDirMaskCur,m,'nii.gz'),cMask,'uni',false);
-            
-            strPathUnion = PathUnsplit(strDirMaskCur,strName,'nii.gz');
-            MRIMaskMerge(cPathMask,strPathUnion,'force',opt.force,'silent',true);
-            
+			cPathMask		= cellfun(@(m) PathUnsplit(strDirMaskCur,[m strHemi],'nii.gz'),cMask,'uni',false);
+			strPathUnion	= PathUnsplit(strDirMaskCur,[strName strHemi],'nii.gz');
+			
+			MRIMaskMerge(cPathMask,strPathUnion,'force',opt.force,'silent',true);
 		end
-	
+	end
 end
 %------------------------------------------------------------------------------%
 
