@@ -1,0 +1,116 @@
+function h = Bar(x,err,p,varargin)
+% MR.Plot.Bar
+% 
+% Description:	plot a bar graph
+% 
+% Syntax:	h = MR.Plot.Bar(x,err,p,<options>)
+%
+% In:
+%	x			- an nGroup x nBar array of data
+%	err			- an nGroup x nBar array of errors
+%	p			- an nGroup x nBar array of p-values
+%	<options>:
+%		name:	('bar') the plot name
+%		bars:	(<none>) the bar labels
+%		groups:	(<none>) the group labels
+%		ylabel:	(<none>) the y-axis label
+%		ymin:	(<auto>) the y min
+%		ymax:	(<auto>) the y max
+%		thresh:	(<none>) the significance threshold
+%		outdir:	(<none>) the output directory
+% 
+% Updated: 2014-03-06
+% Copyright 2014 Alex Schlegel (schlegel@gmail.com).  This work is licensed
+% under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported
+% License.
+opt	= ParseArgs(varargin,...
+		'name'		, 'bar'	, ...
+		'bars'		, []	, ...
+		'groups'	, []	, ...
+		'ylabel'	, []	, ...
+		'ymin'		, []	, ...
+		'ymax'		, []	, ...
+		'thresh'	, []	, ...
+		'outdir'	, []	  ...
+		);
+
+nGroup		= numel(opt.groups);
+kGroup		= 1:nGroup;
+
+nBar		= numel(opt.bars);
+
+%sort by descending whatever
+	[x,kSort]	= arrayfun(@(k) sort(x(k,:),'descend'),kGroup,'uni',false);
+	x			= cat(1,x{:});
+	
+	p	= arrayfun(@(k) p(k,kSort{k}),kGroup,'uni',false);
+	p	= cat(1,p{:});
+	
+	if ~isempty(err)
+		err	= arrayfun(@(k) err(k,kSort{k}),kGroup,'uni',false);
+		err	= cat(1,err{:});
+	end
+	
+	if ~isempty(opt.bars)
+		opt.bars	= cellfun(@(k) opt.bars(k),kSort,'uni',false);
+	end
+
+%get the plot order
+	if ~isempty(opt.groups)
+		kGroupOrder	= MR.Plot.Order(opt.groups);
+		
+		x	= x(kGroupOrder,:);
+		p	= p(kGroupOrder,:);
+		
+		if ~isempty(err)
+			err	= err(kGroupOrder,:);
+		end
+		
+		opt.groups	= opt.groups(kGroupOrder);
+		
+		if ~isempty(opt.bars)
+			opt.bars	= opt.bars(kGroupOrder);
+		end
+	end
+
+%translate
+	opt.groups	= MR.Translate(opt.groups);
+	opt.bars	= MR.Translate(opt.bars);
+
+%plot
+	col	= repmat(reshape(GetPlotColors(2),[2 1 3]),[1 nBar 1]);
+	
+	x
+	h	= alexplot(x,...
+				'error'					, err			, ...
+				'sig'					, p				, ...
+				'ylabel'				, opt.ylabel	, ...
+				'barlabel'				, opt.bars		, ...
+				'barlabellocation'		, 45			, ...
+				'grouplabel'			, opt.groups	, ...
+				'legendlocation'		, 'NorthEast'	, ...
+				'color'					, col			, ...
+				'barspace'				, 0.01			, ...
+				'groupspace'			, 0.05			, ...
+				'ymin'					, opt.ymin		, ...
+				'ymax'					, opt.ymax		, ...
+				'hline'					, opt.thresh	, ...
+				'hlinewidth'			, 4				, ...
+				'w'						, 616			, ...
+				'h'						, 300			, ...
+				'pgrid'					, 8				, ...
+				'pstep'					, 5				, ...
+				'axistype'				, 'L'			, ...
+				'wax'					, 0.88			, ...
+				'tax'					, 0.02			, ...
+				'hax'					, 0.75			, ...
+				'showgrid'				, false			, ...
+				'fontsize'				, 1.5			, ...
+				'type'					, 'bar'			  ...
+				);
+
+%save
+	if ~isempty(opt.outdir)
+		strPathOut	= PathUnsplit(opt.outdir,opt.name,'png');
+		im			= fig2png(h.hF,strPathOut,'dpi',600);
+	end
