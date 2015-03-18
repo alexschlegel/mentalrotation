@@ -16,7 +16,11 @@ function [cPathMask,cMask] = Mask(varargin)
 % 	cPathMask	- an nSubject x 1 cell of nMask x 1 cells of mask paths
 %	cMask		- an nMask x 1 cell of mask names
 % 
+<<<<<<< HEAD
+% Updated: 2015-01-14
+=======
 % Updated: 2014-04-20
+>>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
 % Copyright 2014 Alex Schlegel (schlegel@gmail.com).  This work is licensed
 % under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported
 % License.
@@ -44,4 +48,8 @@ end
 strDirMask	= DirAppend(strDirData,'mask');
 
 cMask		= opt.mask;
+<<<<<<< HEAD
+cPathMask	= cellfun(@(s) cellfun(@(m) PathUnsplit(DirAppend(strDirMask,s,'unique'),m,'nii.gz'),cMask,'uni',false),cSubject,'uni',false);
+=======
 cPathMask	= cellfun(@(s) cellfun(@(m) PathUnsplit(DirAppend(strDirMask,s),m,'nii.gz'),cMask,'uni',false),cSubject,'uni',false);
+>>>>>>> db7db01acb983decc481cadb5fd309cd0ade99e7
