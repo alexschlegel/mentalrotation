@@ -31,5 +31,5 @@ s.motor	=	{
 s.all	= [s.motor; s.ci];
 
 sOrig	= s;
-s.left	= structtreefun(@(c) cellfun(@(str) [str '-left'],c,'uni',false),sOrig);
-s.right	= structtreefun(@(c) cellfun(@(str) [str '-right'],c,'uni',false),sOrig);
+s.left	= structtreefun(@(c) cellfun(@(str) [str '_left'],c,'uni',false),sOrig);
+s.right	= structtreefun(@(c) cellfun(@(str) [str '_right'],c,'uni',false),sOrig);
