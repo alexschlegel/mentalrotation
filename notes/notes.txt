@@ -1,0 +1,3 @@
+18mar14ap had strange negative values in runs 6 ad 9-12 that screwed up motion
+correction and gaussian spatial smoothing. see 20150320_preprocess_18mar14ap.m
+for the fix

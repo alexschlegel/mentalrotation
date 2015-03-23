@@ -1,22 +1,11 @@
-% Analysis_20150318_ROIMVPA.m
-% 4-way operation classification in each ROI.
-% ROIs included in this analysis are the 6 "core" and 7 "motor" ROIs.
-% All ROIs are bilateral and mutually exclusive.
-% Uses all 5 test TRs for classification.
-% 1) ROI MVPA
-%   	a. pre-whiten data using PCA
-%       b. classify rotation type within this component space
-% Updated: 2015-03-23
-% Copyright 2015 Alex Schlegel (schlegel@gmail.com).  This work is licensed
-% under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported
-% License.
-
+% Analysis_20150320_ROICCMVPA.m
+% ROI cross-classification analysis between each ROI from ROIMVPA
 nThread	= 12;
 
-dimPCAMin	= 10;
+dimPCA	= 50;
 
 %create directory for analysis results
-	strNameAnalysis	= '20150318_roimvpa';
+	strNameAnalysis	= '20150320_roiccmvpa';
 	strDirOut		= DirAppend(strDirAnalysis, strNameAnalysis);
 	CreateDirPath(strDirOut);
 
@@ -36,17 +25,17 @@ dimPCAMin	= 10;
 	nRun	= size(ifo.operation,2);
 	kRun	= reshape(repmat(1:nRun,[durRun 1]),[],1);
 
-%ROI Classification!
+%ROI Cross-classification!
 	conf	= MR.ConfusionModels;
 	conf	= conf{1};
 	
-	res	= MVPAROIClassify(...
+	res	= MVPAROICrossClassify(...
 			'output_dir'		, strDirOut		, ...
 			'dir_data'			, strDirData	, ...
 			'subject'			, cSession		, ...
 			'mask'				, cMask			, ...
 			'mask_variant'		, 'unique'		, ...
-			'mindim'			, dimPCAMin		, ...
+			'dim'				, dimPCA		, ...
 			'targets'			, cTarget		, ...
 			'chunks'			, kChunk		, ...
 			'target_blank'		, 'Blank'		, ...
@@ -59,5 +48,5 @@ dimPCAMin	= 10;
 			);
 
 %save the results
-	strPathOut	= PathUnsplit(strDirOut,'result','mat');    
+	strPathOut	= PathUnsplit(strDirOut,'result','mat');
 	save(strPathOut,'res');
