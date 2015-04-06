@@ -238,21 +238,70 @@ sMask	= MR.Masks;
 
 %create disjoint masks
 	cPathMaskAll	= cellfun(@(d) cellfun(@(m) PathUnsplit(d,m,'nii.gz'),sMask.all,'uni',false),cDirMask,'uni',false);
-	cPathMaskLeft	= cellfun(@(d) cellfun(@(m) PathUnsplit(d,m,'nii.gz'),sMask.left.all,'uni',false),cDirMask,'uni',false);
-	cPathMaskRight	= cellfun(@(d) cellfun(@(m) PathUnsplit(d,m,'nii.gz'),sMask.right.all,'uni',false),cDirMask,'uni',false);
 	
 	[b,cPathMaskDisjoint]	= MRIMaskDisjoint(cPathMaskAll,...
 								'nthread'	, opt.nthread	, ...
 								'force'		, opt.force		  ...
 								);
-	
-	[b,cPathMaskDisjointLeft]	= MRIMaskDisjoint(cPathMaskLeft,...
-									'nthread'	, opt.nthread	, ...
-									'force'		, opt.force		  ...
-									);
-	
-	[b,cPathMaskDisjointRight]	= MRIMaskDisjoint(cPathMaskRight,...
-									'nthread'	, opt.nthread	, ...
-									'force'		, opt.force		  ...
-									);
-	
+
+% no more union masks
+% 	cUnionName	= fieldnames(sUnion);
+% 	
+% 	MultiTask(@(n) UnionMask(sUnion.(n),n),{cUnionName},...
+% 		'description'	, 'constructing union masks'	, ...
+% 		'nthread'		, opt.nthread					  ...
+% 		);
+
+% Get mutually exclusive ("unique") masks
+% Remember: use MRIMaskMerge and MRIMaskInvert.
+
+% sets of masks defined in UnionMasks that should be mutually exclusive
+cSetLabel = {'all'; 'all_left'; 'all_right'};
+cSets = cellfun(@(l) sUnion.(l), cSetLabel, 'uni',false);
+
+cPathMask = cellfun(@(sub) cellfun(@(set) cellfun(@(m) ...
+    PathUnsplit(DirAppend(strDirData,'mask',sub),m,'nii.gz'),set,'uni',false), ...
+    cSets, 'uni', false), cSubject, 'uni', false);
+
+cDirUnique = cellfun(@(sub) DirAppend(strDirData,'mask',sub,'unique'), cSubject, 'uni', false);
+[b, ~] = cellfun(@mkdir, cDirUnique, 'uni', false);
+if ~all(cell2mat(b))
+    error('Directories for unique masks could not be created');
+end
+cPathUniqueMask = MultiTask(@(sub, dir) cellfun(@(set) MakeUniqueMasks(set, dir), ... 
+    sub,'uni', false), {cPathMask, cDirUnique}, ...
+    'description',  'generating non-intersecting masks',    ...
+    'nthread',      opt.nthread                             ...
+    );
+
+cPathUniqueMaskFlat = cellnestflatten(cPathUniqueMask);
+
+if ~all(FileExists(cPathUniqueMaskFlat))
+    error('Creation of unique masks failed');
+end
+
+
+%-----------------------------------------------------------------------------%
+% Generate unique masks for each mask in cSet (relative to the other masks
+% in the set)
+% cSet is a cell of paths to masks.
+% strUniqueDir is the directory into which to put the unique masks.
+% Returns a cell of paths to the unique masks.
+function cPath = MakeUniqueMasks(cSet, strUniqueDir)
+
+strTempMask = GetTempFile('ext', 'nii.gz');
+cName = cellfun(@(mask) PathGetFilePre(mask, 'favor', 'nii.gz'), cSet, 'uni', false);
+cPath = cellfun(@(name) PathUnsplit(strUniqueDir, name, 'nii.gz'), cName, 'uni',false);
+for i = 1:numel(cSet)
+    if ~FileExists(cPath{i}) || opt.force
+        cOtherMasks = setdiff(cSet, cSet(i));
+        MRIMaskMerge(cOtherMasks, strTempMask, 'silent', true); % union of other masks
+        MRIMaskInvert(strTempMask, 'output', strTempMask); % voxels not in other masks
+        MRIMaskMerge({strTempMask; cSet{i}},cPath{i},'method','and','silent',true);
+        % voxels in this mask AND not in other masks
+    end
+end
+end
+%------------------------------------------------------------------------------%
+
+end
