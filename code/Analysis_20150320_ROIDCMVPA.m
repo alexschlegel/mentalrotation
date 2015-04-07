@@ -15,25 +15,33 @@ dimPCA	= 10;
 	cSession	= ifo.code.fmri;
 
 %get masks
-	cMask	= MR.UnionMasks;
+	cMask	= MR.Masks;
 	cMask	= cMask.all;
 
 %targets and chunks
 	cTarget	= ifo.label.te.target.operation.all;
 	
+	cTargetSubset	= {'l';'r';'b';'f'};
+	
 	durRun	= MR.Param('trrun');
 	nRun	= size(ifo.operation,2);
 	kChunk	= reshape(repmat(1:nRun,[durRun 1]),[],1);
+
+%exclude the hand rotation runs
+	kTREnd	= 1640;
 	
-	%exclude hand rotation trials
-		kChunk(kChunk>10)	= 0;
+	cTarget	= cellfun(@(t) [t(1:kTREnd); repmat({'discard'},[numel(t)-kTREnd 1])],cTarget,'uni',false);
+	
+	kChunk(kChunk>10)	= 0;
 
 %ROI directed connectivity classification!
+	strDirMVPA	= DirAppend(strDirOut,'mvpa');
+	
 	conf	= MR.ConfusionModels;
 	conf	= conf{1};
 	
 	res	= MVPAROIDCClassify(...
-			'dir_out'			, strDirOut			, ...
+			'dir_out'			, strDirMVPA		, ...
 			'dir_data'			, strDirData		, ...
 			'subject'			, cSession			, ...
 			'mask'				, cMask				, ...
@@ -41,8 +49,8 @@ dimPCA	= 10;
 			'dim'				, dimPCA			, ...
 			'targets'			, cTarget			, ...
 			'chunks'			, kChunk			, ...
+			'target_subset'		, cTargetSubset	, ...
 			'target_blank'		, 'Blank'			, ...
-			'target_subset'		, {'r','b','l','f'}	, ...
 			'confusion_model'	, conf				, ...
 			'debug'				, 'all'				, ...
 			'debug_multitask'	, 'info'			, ...
@@ -50,5 +58,6 @@ dimPCA	= 10;
 			'force'				, false				  ...
 			);
 
-strPathOut	= PathUnsplit(strDirOut,'result','mat');
-save(strPathOut,'res');
+%save the results
+	strPathOut	= PathUnsplit(strDirOut,'result','mat');
+	save(strPathOut,'res');

@@ -1,4 +1,4 @@
-function s = SubjectInfo2(varargin)
+function s = SubjectInfo(varargin)
 % MR.SubjectInfo
 % 
 % Description:	compile a struct of subject info
@@ -17,10 +17,9 @@ function s = SubjectInfo2(varargin)
 %						all:		all subjects
 %						fmri:		subjects with fmri sessions
 %						preprocess:	preprocessed subjects
-%		prepared:	(true) true to only return info about prepared subjects
 % 
-% Updated: 2014-11-17
-% Copyright 2014 Alex Schlegel (schlegel@gmail.com).  This work is licensed
+% Updated: 2015-04-07
+% Copyright 2015 Alex Schlegel (schlegel@gmail.com).  This work is licensed
 % under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported
 % License.
 global strDirBase strDirData;
@@ -37,7 +36,9 @@ opt.exclude	= ForceCell(opt.exclude);
 opt.state	= CheckInput(opt.state,'state',{'all','fmri','preprocess'});
 
 %condition information
-    p = MR.Param;
+	kRunHand	= 11:13;
+	
+	p = MR.Param;
 	s.condition	= struct(...
 					'figures'   , {{'1';'2';'3';'4';'5';'6';'7';'8'}}	, ...
 					'operation'	, {{'l';'r';'b';'f'}}	  ...
@@ -147,23 +148,30 @@ opt.state	= CheckInput(opt.state,'state',{'all','fmri','preprocess'});
 			
 			for kR=1:nRun
 				if ~isempty(x.PTBIFO.mr.result{kR})
-                    nTrialCur = numel(x.PTBIFO.mr.result{kR});                    
-                    
-                    kUse = nTrialCur-(nTrial-1):nTrialCur;
-                    
-                    if isequal(kUse,1:16) || nTrialCur == 32
-                        %fprintf('All well in here!\n');
-                    else
-                        error('WTF!!!');
-                    end
-                    mShape = (x.PTBIFO.mr.trial.figure.id)';
-                    mOp = (x.PTBIFO.mr.trial.operation)';
-                    
-                    [b,mOp] = ismember(mOp,cat(1,s.condition.operation{:}));
-                    
-                    s.figures(kS,kR,:)		= mShape(:,kR);
+					nTrialCur = numel(x.PTBIFO.mr.result{kR});                    
+					
+					kUse = nTrialCur-(nTrial-1):nTrialCur;
+					
+					if isequal(kUse,1:16) || nTrialCur == 32
+						%fprintf('All well in here!\n');
+					else
+						error('WTF!!!');
+					end
+					mShape = (x.PTBIFO.mr.trial.figure.id)';
+					mOp = (x.PTBIFO.mr.trial.operation)';
+					
+					[b,mOp] = ismember(mOp,cat(1,s.condition.operation{:}));
+					
+					s.figures(kS,kR,:)		= mShape(:,kR);
 					s.operation(kS,kR,:)	= mOp(:,kR);
-                    s.correct(kS,kR,:)		= reshape([x.PTBIFO.mr.result{kR}(kUse).correct],[],1);
+					
+					%edit 2015-04-07: mark every trial from the hand rotation
+					%runs as correct
+					if kR<11
+						s.correct(kS,kR,:)	= reshape([x.PTBIFO.mr.result{kR}(kUse).correct],[],1);
+					else
+						s.correct(kS,kR,:)	= true;
+					end
 					
 					%response time
 						tResponse	= NaN(nTrial,1);
@@ -253,15 +261,19 @@ opt.state	= CheckInput(opt.state,'state',{'all','fmri','preprocess'});
 			for kC=1:nScheme
 				strScheme	= cScheme{kC};
 				
-				cCondition		= reshape(s.condition.(strScheme),[],1);
-				nCondition		= numel(cCondition);
-				cConditionCI	= [repmat({'Blank'},[nCondition 1]); cCondition];
+				cCondition			= reshape(s.condition.(strScheme),[],1);
+				cConditionHand		= cellfun(@(c) regexprep(c,'([lrbf])','h$1'),cCondition,'uni',false);
+				nCondition			= numel(cCondition);
+				cConditionCI		= [repmat({'Blank'},[nCondition 1]); cCondition];
+				cConditionHandCI	= [repmat({'Blank'},[nCondition 1]); cConditionHand];
 				
 				%all
 					[cTarget,cEvent]	= deal(cell(nRun,1));
 					for kR=1:nRun
+						cConditionCur	= conditional(ismember(kR,kRunHand),cConditionHand,cCondition);
+						
 						block		= squeeze(s.(strScheme)(kS,kR,:));
-						cTarget{kR}	= block2target(block,durBlock,durRest,cCondition,durPre,durPost,...
+						cTarget{kR}	= block2target(block,durBlock,durRest,cConditionCur,durPre,durPost,...
 										'hrf'			, sLabel.HRF			, ...
 										'block_offset'	, sLabel.BlockOffset	, ...
 										'block_sub'		, sLabel.BlockSub		  ...
@@ -290,11 +302,13 @@ opt.state	= CheckInput(opt.state,'state',{'all','fmri','preprocess'});
 				%just correct
 					[cTarget,cEvent]	= deal(cell(nRun,1));
 					for kR=1:nRun
+						cConditionCur	= conditional(ismember(kR,kRunHand),cConditionHandCI,cConditionCI);
+						
 						block		= squeeze(s.(strScheme)(kS,kR,:));
 						bCorrect	= squeeze(s.correct(kS,kR,:));
 						blockCI		= block + nCondition*bCorrect;
 						
-						cTarget{kR}	= block2target(blockCI,durBlock,durRest,cConditionCI,durPre,durPost,...
+						cTarget{kR}	= block2target(blockCI,durBlock,durRest,cConditionCur,durPre,durPost,...
 										'hrf'			, sLabel.HRF			, ...
 										'block_offset'	, sLabel.BlockOffset	, ...
 										'block_sub'		, sLabel.BlockSub		  ...
@@ -323,10 +337,10 @@ opt.state	= CheckInput(opt.state,'state',{'all','fmri','preprocess'});
 					end
             end
             
-            cTargetOp = s.label.(strLabel).target.operation.all{kS};
-            kStartHR = 1641;
-            cTargetOp(kStartHR:end) = regexprep(cTargetOp(kStartHR:end),'^(.)$','h$1');
-            s.label.(strLabel).target.operation.all{kS} = cTargetOp;
+%             cTargetOp = s.label.(strLabel).target.operation.all{kS};
+%             kStartHR = 1641;
+%             cTargetOp(kStartHR:end) = regexprep(cTargetOp(kStartHR:end),'^(.)$','h$1');
+%             s.label.(strLabel).target.operation.all{kS} = cTargetOp;
 		end
     end
 
