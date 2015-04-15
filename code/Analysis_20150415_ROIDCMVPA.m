@@ -3,9 +3,9 @@
 % ROIMVPA. trying again with more intelligent parameters.
 nThread	= 12;
 
-dimPCA			= 20;
-fSelect			= 0.25;
-strClassifier	= 'SMLR';
+dimPCA		= 20;
+fSelect		= 0.25;
+classifier	= 'SMLR';
 
 %create directory for analysis results
 	strNameAnalysis	= '20150415_roidcmvpa';
