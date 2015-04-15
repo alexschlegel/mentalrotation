@@ -4,7 +4,7 @@
 strDirFunctional	= '/home/tselab/studies/mentalrotation/data/functional/18mar14ap/';
 cPathFunctional		= arrayfun(@(r) PathUnsplit(strDirFunctional,sprintf('data_%02d',r),'nii.gz'),(1:13)','uni',false);
 
-s	= cellfunprogress(@NIfTIFixOutliers,cPathFunctional);
+s	= cellfunprogress(@NIfTI.FixOutliers,cPathFunctional);
 
 bRerun			= [s.nOutlier]>0;
 cPathFunctional	= cPathFunctional(bRerun);
