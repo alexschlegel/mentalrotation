@@ -45,7 +45,7 @@ classifier	= 'SMLR';
 	
 	cTarget	= cellfun(@(t) [t(1:kTREnd); repmat({'discard'},[numel(t)-kTREnd 1])],cTarget,'uni',false);
 	
-	kChunk	= cellfun(@(k) conditional(kRun>10,0,k),kChunk,'uni',false);
+	kChunk(kChunk>10)	= 0;
 
 %ROI directed connectivity classification!
 	strDirMVPA	= DirAppend(strDirOut,'mvpa');
