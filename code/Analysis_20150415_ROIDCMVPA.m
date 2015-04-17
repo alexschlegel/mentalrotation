@@ -29,14 +29,16 @@ classifier	= 'SMLR';
 	nRun	= size(ifo.operation,2);
 	kRun	= reshape(repmat(1:nRun,[durRun 1]),[],1);
 	
-	%chunk by figures (grouped in two so we get good lengths for GC calculation)
-		nFigure		= numel(ifo.condition.figures);
-		fig2chunk	= reshape(repmat(1:nFigure/2,[2 1]),[],1);
+% 	%chunk by figures (grouped in two so we get good lengths for GC calculation)
+% 		nFigure		= numel(ifo.condition.figures);
+% 		fig2chunk	= reshape(repmat(1:nFigure/2,[2 1]),[],1);
 		
-		[bFigure,kFigure]	= cellfun(@(t) ismember(t,ifo.condition.figures),ifo.label.te.target.figures.all,'uni',false);
+% 		[bFigure,kFigure]	= cellfun(@(t) ismember(t,ifo.condition.figures),ifo.label.te.target.figures.all,'uni',false);
 		
-		fig2chunk	= [0; fig2chunk];
-		kChunk		= cellfun(@(k) fig2chunk(k+1),kFigure,'uni',false);
+% 		fig2chunk	= [0; fig2chunk];
+% 		kChunk		= cellfun(@(k) fig2chunk(k+1),kFigure,'uni',false);
+	
+	kChunk	= kRun;
 
 %exclude the hand rotation runs
 	kTREnd	= 1640;
