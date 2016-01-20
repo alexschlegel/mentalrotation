@@ -4,7 +4,7 @@ function comps = MRComps(stat, varargin)
 % Description: do some additional comparisons after doing ROIMVPA on the
 % mental rotation data.
 %
-% Syntax: comps = MRComps(stat, [ifo]=ifo, [nthread]=11,[accuracy]=true);
+% Syntax: comps = MRComps(stat, [ifo]=ifo, [cores]=11,[accuracy]=true);
 %
 % In:
 %   stat:   the stat struct returned by MR.Analyze.ROIMVPA
@@ -48,10 +48,10 @@ iMasks = structfun(@(maskset) cellfun(fGetIndex,maskset),masks,'uni',false);
 
 % [~, stats.coremotor] = MR.Analyze.ROIMVPA('mask' , cMask_coremotor, ...
 %                                           'ifo'  , ifo,             ...
-%                                           'nthread', nthread);
-% [~, stats.coremotor_orig] = MR.Analyze.ROIMVPA('mask', masks.coremotor_orig, 'ifo', ifo, 'nthread', nthread);                                      
+%                                           'cores', cores);
+% [~, stats.coremotor_orig] = MR.Analyze.ROIMVPA('mask', masks.coremotor_orig, 'ifo', ifo, 'cores', cores);                                      
 %                                       
-% [~, stats.latm] = MR.Analyze.ROIMVPA('mask', cMask_latm, 'ifo', ifo, 'nthread', nthread);
+% [~, stats.latm] = MR.Analyze.ROIMVPA('mask', cMask_latm, 'ifo', ifo, 'cores', cores);
 
 
 %-----Group comparison--------------------------------------------------
@@ -137,7 +137,7 @@ comps.hemi = hemiCompare;
 % only the original subjects and ROIs
 % cSubject = ifo.code.fmri;
 % cOldSubject = cSubject(~strncmp('07sep14', cSubject, 7));
-% [~,stats.oldsubjects_coremotor_orig] = MR.Analyze.ROIMVPA('subject', cOldSubject, 'mask', masks.coremotor_orig, 'nthread', nthread); 
+% [~,stats.oldsubjects_coremotor_orig] = MR.Analyze.ROIMVPA('subject', cOldSubject, 'mask', masks.coremotor_orig, 'cores', cores); 
 
 % false discovery rate corrections
 [~, comps.group.corr.motor.rt.pfdr] = fdr(comps.group.corr.motor.rt.p, 0.05);

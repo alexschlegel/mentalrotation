@@ -87,7 +87,7 @@ classdef MentalRotation < PTB.Object
 				opt.fixation_task_rate		= MR.Param('fixation','rate');
 			
 			%options for PTB.Experiment object
-			cOpt = Opt2Cell(opt);
+			cOpt = opt2cell(opt);
 			
 			%initialize the experiment
 			mr.Experiment	= PTB.Experiment(cOpt{:});
@@ -103,7 +103,7 @@ classdef MentalRotation < PTB.Object
 		%start the mentalrotation object
 			mr.argin	= append(mr.argin,varargin);
 			
-			if ~notfalse(mr.Experiment.Info.Get('mr','prepared'))
+			if nottrue(mr.Experiment.Info.Get('mr','prepared'))
 				%prepare info
 				mr.Prepare(varargin{:});
 			end

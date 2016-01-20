@@ -1,0 +1,7 @@
+import STL
+select mesh (expand item, then click child with same name)
+Menu: Mesh -> Vertices -> Smooth Vertex (6 times)
+switch to Material Mode (sphere with four quadrants)
+select one of the existing materials
+click + to "add a new material"
+rename material, change color
